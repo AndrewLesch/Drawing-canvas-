@@ -2,7 +2,6 @@ let x1,y1,x2,y2;
 let windowHeight = window.innerHeight;
 let windowWidth = window.innerWidth;
 let clicks = 1;
-let isUsed = false;
 let points = [];
 let canvas = document.getElementById('drawing-place');
 canvas.height = windowHeight;
@@ -14,7 +13,6 @@ context = canvas.getContext('2d');
 const returnButton = document.getElementById("return-button");
 returnButton.addEventListener("click", function () {
     context.clearRect(0,0,canvas.width,canvas.height);
-    isUsed = false;
     for(var i=0;i < points.length; i++){
         console.log(i);
         context.beginPath();
@@ -31,7 +29,11 @@ returnButton.addEventListener("click", function () {
 const cancelButton = document.getElementById("cancel-button");
 cancelButton.addEventListener("click", function () {
     context.clearRect(0,0,canvas.width,canvas.height);
-    isUsed = true;
+    if (!(points.length % 2 == 0)) {
+        points.splice(-1,1);
+        clicks = 1;
+    }
+
     for(var i=0;i < points.length - 2; i++){
         context.beginPath();
         context.moveTo(points[i].x,points[i].y);
@@ -43,16 +45,18 @@ cancelButton.addEventListener("click", function () {
         console.log(points);
     }
 });
+
+const deleteButton = document.getElementById("delete-button")
+deleteButton.addEventListener("click", function () {
+    context.clearRect(0,0,canvas.width,canvas.height);
+    points = [];
+    clicks = 1;
+})
+
 canvas.onmousedown = function (event) {
     event = event || window.event;
 
     if (clicks === 1) {
-        if(isUsed === true) {
-            points.splice(-2,2);
-            console.log(points);
-            console.log("ss");
-        }
-        
         x1 = event.clientX;
         y1 = event.clientY;
         context.fillRect(x1,y1-150,3,3);
@@ -61,7 +65,6 @@ canvas.onmousedown = function (event) {
             y: y1-150,
         });
         clicks = 2;
-        isUsed = false;
     } else {
         x2 = event.clientX;
         y2 = event.clientY;
