@@ -1,9 +1,12 @@
+const windowHeight = window.innerHeight;
+const windowWidth = window.innerWidth;
+
 let x1,y1,x2,y2;
-let windowHeight = window.innerHeight;
-let windowWidth = window.innerWidth;
 let clicks = 1;
 let points = [];
-let canvas = document.getElementById('drawing-place');
+let cancelButtonIsUsed = false;
+
+const canvas = document.getElementById('drawing-place');
 canvas.height = windowHeight;
 canvas.width = windowWidth;
 canvasBackgroundColor = 'lightgray';
@@ -12,29 +15,44 @@ context = canvas.getContext('2d');
     
 const returnButton = document.getElementById("return-button");
 returnButton.addEventListener("click", function () {
+    if (points.length > 0) {
+        cancelButton.removeAttribute("disabled");
+        deleteButton.removeAttribute("disabled");
+    }
+
     context.clearRect(0,0,canvas.width,canvas.height);
-    for(var i=0;i < points.length; i++){
-        console.log(i);
+    cancelButtonIsUsed = false;
+    for (let i = 0; i < points.length; i++) {
         context.beginPath();
         context.moveTo(points[i].x,points[i].y);
         context.fillRect(points[i].x,points[i].y,3,3);
         i++;
+        
+        if (i === points.length) {
+            return;
+        }
+
         context.lineTo(points[i].x,points[i].y);
         context.fillRect(points[i].x,points[i].y,3,3);
         context.stroke();
-        console.log(i);
     }
 });
 
 const cancelButton = document.getElementById("cancel-button");
 cancelButton.addEventListener("click", function () {
-    context.clearRect(0,0,canvas.width,canvas.height);
+    if (points.length <= 3) {
+        cancelButton.setAttribute("disabled","disabled");
+        deleteButton.setAttribute("disabled","disabled");
+    }
+
+    cancelButtonIsUsed = true;
+    context.clearRect(0, 0, canvas.width,canvas.height);
     if (!(points.length % 2 == 0)) {
         points.splice(-1,1);
         clicks = 1;
     }
 
-    for(var i=0;i < points.length - 2; i++){
+    for (let i = 0; i < points.length - 2; i++) {
         context.beginPath();
         context.moveTo(points[i].x,points[i].y);
         context.fillRect(points[i].x,points[i].y,3,3);
@@ -48,15 +66,28 @@ cancelButton.addEventListener("click", function () {
 
 const deleteButton = document.getElementById("delete-button")
 deleteButton.addEventListener("click", function () {
-    context.clearRect(0,0,canvas.width,canvas.height);
+    cancelButton.setAttribute("disabled","disabled");
+    returnButton.setAttribute("disabled","disabled");
+    deleteButton.setAttribute("disabled","disabled");
+    context.clearRect(0, 0, canvas.width,canvas.height);
     points = [];
     clicks = 1;
-})
+});
 
 canvas.onmousedown = function (event) {
     event = event || window.event;
-
+    if (points.length >= 0) {
+        cancelButton.removeAttribute("disabled");
+        returnButton.removeAttribute("disabled");
+        deleteButton.removeAttribute("disabled");
+    }
+    
     if (clicks === 1) {
+        if (cancelButtonIsUsed === true) {
+            points.splice(-2,2);
+            cancelButtonIsUsed = false;
+        }
+
         x1 = event.clientX;
         y1 = event.clientY;
         context.fillRect(x1,y1-150,3,3);
@@ -83,9 +114,4 @@ function draw(x1,x2,y1,y2) {
     context.moveTo(x1, y1-150);
     context.lineTo(x2, y2-150);
     context.stroke();
-}
-
-
-
-
-
+};

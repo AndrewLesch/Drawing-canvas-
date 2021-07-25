@@ -45,6 +45,12 @@
     color: white;
     transform: translateY(-7px);
 }
+.functional-buttons:disabled {
+    background: grey;
+    box-shadow: 0 15px 20px rgba(46, 229, 157, .4);
+    color: white;
+    transform: translateY(-7px);
+}
 
 #drawing-place {
     left: 0;
