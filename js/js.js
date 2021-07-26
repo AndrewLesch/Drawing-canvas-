@@ -13,11 +13,11 @@ canvasBackgroundColor = 'lightgray';
 canvas.style.backgroundColor = canvasBackgroundColor;
 context = canvas.getContext('2d');
     
-const returnButton = document.getElementById("return-button");
-returnButton.addEventListener("click", function () {
+const returnButton = document.getElementById('return-button');
+returnButton.addEventListener('click', function () {
     if (points.length > 0) {
-        cancelButton.removeAttribute("disabled");
-        deleteButton.removeAttribute("disabled");
+        cancelButton.removeAttribute('disabled');
+        deleteButton.removeAttribute('disabled');
     }
 
     context.clearRect(0,0,canvas.width,canvas.height);
@@ -38,11 +38,11 @@ returnButton.addEventListener("click", function () {
     }
 });
 
-const cancelButton = document.getElementById("cancel-button");
-cancelButton.addEventListener("click", function () {
+const cancelButton = document.getElementById('cancel-button');
+cancelButton.addEventListener('click', function () {
     if (points.length <= 3) {
-        cancelButton.setAttribute("disabled","disabled");
-        deleteButton.setAttribute("disabled","disabled");
+        cancelButton.setAttribute('disabled','disabled');
+        deleteButton.setAttribute('disabled','disabled');
     }
 
     cancelButtonIsUsed = true;
@@ -64,11 +64,11 @@ cancelButton.addEventListener("click", function () {
     }
 });
 
-const deleteButton = document.getElementById("delete-button")
-deleteButton.addEventListener("click", function () {
-    cancelButton.setAttribute("disabled","disabled");
-    returnButton.setAttribute("disabled","disabled");
-    deleteButton.setAttribute("disabled","disabled");
+const deleteButton = document.getElementById('delete-button')
+deleteButton.addEventListener('click', function () {
+    cancelButton.setAttribute('disabled','disabled');
+    returnButton.setAttribute('disabled','disabled');
+    deleteButton.setAttribute('disabled','disabled');
     context.clearRect(0, 0, canvas.width,canvas.height);
     points = [];
     clicks = 1;
@@ -77,9 +77,9 @@ deleteButton.addEventListener("click", function () {
 canvas.onmousedown = function (event) {
     event = event || window.event;
     if (points.length >= 0) {
-        cancelButton.removeAttribute("disabled");
-        returnButton.removeAttribute("disabled");
-        deleteButton.removeAttribute("disabled");
+        cancelButton.removeAttribute('disabled');
+        returnButton.removeAttribute('disabled');
+        deleteButton.removeAttribute('disabled');
     }
     
     if (clicks === 1) {
