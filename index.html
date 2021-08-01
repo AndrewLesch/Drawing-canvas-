@@ -6,17 +6,35 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <script src="../js/js.js" defer></script>
     <link href="../style/style.css" rel="stylesheet">
+    <script src="https://unpkg.com/vanilla-picker@2"></script>
     <title>Drawing</title>
 </head>
 <body>
-
 <div class="container">
     <div class="functional-panel">
         <button class="functional-buttons" id="cancel-button" disabled="disabled">Отмена</button>
         <button class="functional-buttons" id="return-button" disabled="disabled">Вернуть</button>
         <button class="functional-buttons" id="delete-button" disabled="disabled">Удалить все</button>
     </div>
-    <canvas id ="drawing-place"></canvas>
+    <div class="toolbar">
+        <a href="#" class="button" id="palette">
+            <img src="/assets/palette.png" alt="brush" class="palette" id="palette">
+        </a>
+
+        <a href="#" class="button" id="brush">
+            <img src="/assets/brush.png" alt="brush" class="brush">
+        </a>
+        <div class="dropdown-content" id="dropdown-content">
+            <button id="1" class="dropdown-buttons">Ширина 1</button>
+            <button id="2" class="dropdown-buttons">Ширина 2</button>
+            <button id="3" class="dropdown-buttons">Ширина 3</button>
+            <button id="4" class="dropdown-buttons">Ширина 4</button>
+            <button id="5" class="dropdown-buttons">Ширина 5</button>
+        </div>
+    </div>
+
+      
+    <canvas id ="drawing-place"></canvas> 
 </div>
 
 </body>

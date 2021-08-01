@@ -6,6 +6,8 @@ let clicks = 1;
 let points = [];
 let clicksOnCancelButton = 0;
 let cancelButtonIsUsed = false;
+let colorOfLine = "black";
+let widthOfLine = 1;
 
 const canvas = document.getElementById('drawing-place');
 canvas.height = windowHeight;
@@ -24,16 +26,20 @@ returnButton.addEventListener('click', function () {
     context.clearRect(0,0,canvas.width,canvas.height);
     // Пока не придумал как переписать на for Each красиво, поэтому для избежания багов остался for
     for (let i = 0; i < (points.length - (2 * clicksOnCancelButton) + 2); i++) {
+        context.strokeStyle = points[i].color;
+        context.lineWidth = points[i].lineWidth;
         context.beginPath();
         context.moveTo(points[i].x, points[i].y);
         context.fillRect(points[i].x, points[i].y, 3, 3);
         i++;
+        context.strokeStyle = points[i].color;
+        context.lineWidth = points[i].lineWidth;
         if (i === points.length) {
             return;
         }
 
         context.lineTo(points[i].x, points[i].y);
-        context.fillRect(points[i].x, points[i].y ,3, 3);
+        context.fillRect(points[i].x, points[i].y , 3, 3);
         context.stroke();
     }
     clicksOnCancelButton--;
@@ -71,10 +77,14 @@ cancelButton.addEventListener('click', function () {
     context.clearRect(0, 0, canvas.width,canvas.height);
     // Пока не придумал как переписать на for Each красиво, поэтому для избежания багов остался for
     for (let i = 0; i < points.length - (2 * clicksOnCancelButton); i++) {
+        context.strokeStyle = points[i].color;
+        context.lineWidth = points[i].lineWidth;
         context.beginPath();
         context.moveTo(points[i].x, points[i].y);
         context.fillRect(points[i].x, points[i].y, 3, 3);
         i++;
+        context.strokeStyle = points[i].color;
+        context.lineWidth = points[i].lineWidth;
         context.lineTo(points[i].x, points[i].y);
         context.fillRect(points[i].x, points[i].y, 3, 3);
         context.stroke();
@@ -101,6 +111,8 @@ deleteButton.addEventListener('click', function () {
 
 canvas.onmousedown = function (event) {
     event = event || window.event;
+    context.strokeStyle = colorOfLine;
+    context.lineWidth = widthOfLine;
     if (points.length >= 0) {
         cancelButton.removeAttribute('disabled');
         deleteButton.removeAttribute('disabled');
@@ -121,10 +133,12 @@ canvas.onmousedown = function (event) {
 
         x1 = event.clientX;
         y1 = event.clientY;
-        context.fillRect(x1 ,y1-150, 3, 3);
+        context.fillRect(x1 ,y1-204, 3, 3);
         points.push({
             x: x1,
-            y: y1-150,
+            y: y1-204,
+            color : colorOfLine,
+            lineWidth : widthOfLine,
         });
         clicks = 2;
         cancelButtonIsUsed = false;
@@ -135,10 +149,12 @@ canvas.onmousedown = function (event) {
     } else {
         x2 = event.clientX;
         y2 = event.clientY;
-        context.fillRect(x2, y2-150, 3, 3);
+        context.fillRect(x2, y2-204, 3, 3);
         points.push({
             x: x2,
-            y: y2-150,
+            y: y2-204,
+            color : colorOfLine,
+            lineWidth : widthOfLine,
         });
         clicks = 1;
         draw(x1, x2 ,y1, y2);
@@ -147,7 +163,34 @@ canvas.onmousedown = function (event) {
 
 function draw(x1, x2, y1, y2) {
     context.beginPath();
-    context.moveTo(x1, y1-150);
-    context.lineTo(x2, y2-150);
+    context.moveTo(x1, y1-204);
+    context.lineTo(x2, y2-204);
     context.stroke();
 };
+
+const brushPanel = document.getElementById('brush');
+const dropDawn = document.getElementById('dropdown-content');
+dropDawn.onclick = function (event) {
+    widthOfLine = event.target.id;
+}
+brushPanel.addEventListener('click', function (event) {
+    dropDawn.style.display = 'block';
+})
+document.onclick = function (e) {
+    if (e.target.className !== 'brush') {
+        dropDawn.style.display = 'none';
+    }
+}
+
+var parent = document.querySelector('#palette');
+    var picker = new Picker({
+        parent: parent,
+        popup: 'left',
+        color: 'violet',
+        //alpha: false,
+        //editor: false,
+        editorFormat: 'rgb',
+        onDone: function(color) {
+            colorOfLine = color.rgbaString;
+        },
+    });

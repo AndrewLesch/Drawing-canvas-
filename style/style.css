@@ -45,11 +45,32 @@
     color: white;
     transform: translateY(-7px);
 }
+
 .functional-buttons:disabled {
     background: grey;
     box-shadow: 0 15px 20px rgba(46, 229, 157, .4);
     color: white;
     transform: translateY(-7px);
+}
+
+.toolbar {
+    margin-left: calc(100% - 110px);
+}
+
+a {
+    text-decoration: none;
+}
+
+.brush {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+}
+
+.palette {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
 }
 
 #drawing-place {
@@ -58,3 +79,22 @@
     height: 100%;
     background-color: black;
 }
+
+
+
+  .dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+  }
+  
+  /* Links inside the dropdown */
+.dropdown-buttons {
+    color: black;
+    padding: 12px 24px;
+    display: block;
+  }
+  
