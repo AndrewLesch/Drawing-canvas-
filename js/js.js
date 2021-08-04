@@ -1,10 +1,11 @@
 const windowHeight = window.innerHeight;
 const windowWidth = window.innerWidth;
+const heightOfTop = 204;
 
 let x1,y1,x2,y2;
-let clicks = 1;
+let isFirstPointExist = true;
 let points = [];
-let clicksOnCancelButton = 0;
+let lastRemovedPointIndex = 0;
 let cancelButtonIsUsed = false;
 let colorOfLine = "black";
 let widthOfLine = 1;
@@ -23,27 +24,20 @@ returnButton.addEventListener('click', function () {
         deleteButton.removeAttribute('disabled');
     }
 
-    context.clearRect(0,0,canvas.width,canvas.height);
+    context.clearRect(0, 0, canvas.width, canvas.height);
     // Пока не придумал как переписать на for Each красиво, поэтому для избежания багов остался for
-    for (let i = 0; i < (points.length - (2 * clicksOnCancelButton) + 2); i++) {
-        context.strokeStyle = points[i].color;
-        context.lineWidth = points[i].lineWidth;
-        context.beginPath();
-        context.moveTo(points[i].x, points[i].y);
-        context.fillRect(points[i].x, points[i].y, 3, 3);
+    for (let i = 0; i < (points.length - (2 * lastRemovedPointIndex) + 2); i++) {
+        drawFirstPartOfLine(points[i].x, points[i].y, colorOfLine, widthOfLine);
         i++;
-        context.strokeStyle = points[i].color;
-        context.lineWidth = points[i].lineWidth;
         if (i === points.length) {
             return;
         }
+        
+        drawLastPartOfLine(points[i].x, points[i].y, colorOfLine, widthOfLine);
 
-        context.lineTo(points[i].x, points[i].y);
-        context.fillRect(points[i].x, points[i].y , 3, 3);
-        context.stroke();
     }
-    clicksOnCancelButton--;
-    if (clicksOnCancelButton === 0) {
+    lastRemovedPointIndex--;
+    if (lastRemovedPointIndex === 0) {
         returnButton.setAttribute('disabled', 'disabled');       
     }
 
@@ -53,47 +47,39 @@ returnButton.addEventListener('click', function () {
 const cancelButton = document.getElementById('cancel-button');
 cancelButton.addEventListener('click', function () {
     cancelButtonIsUsed = true;
-    clicksOnCancelButton++;
+    lastRemovedPointIndex++;
 
     if (points.length % 2 !== 0 && points.length <= 1) {
         points.splice(-1, 1);
-        clicks = 1;
-        clicksOnCancelButton++;
+        isFirstPointExist = true;
+        lastRemovedPointIndex++;
     }
 
     if (points.length % 2 !== 0) {
         points.splice(-1, 1);
-        clicks = 1;
+        isFirstPointExist = true;
     }
 
-    if (clicksOnCancelButton * 2 === points.length) {
+    if (lastRemovedPointIndex * 2 === points.length) {
         cancelButton.setAttribute('disabled', 'disabled');    
     }
 
-    if (clicksOnCancelButton !== 0) {
+    if (lastRemovedPointIndex !== 0) {
         returnButton.removeAttribute('disabled');    
     } 
 
     context.clearRect(0, 0, canvas.width,canvas.height);
     // Пока не придумал как переписать на for Each красиво, поэтому для избежания багов остался for
-    for (let i = 0; i < points.length - (2 * clicksOnCancelButton); i++) {
-        context.strokeStyle = points[i].color;
-        context.lineWidth = points[i].lineWidth;
-        context.beginPath();
-        context.moveTo(points[i].x, points[i].y);
-        context.fillRect(points[i].x, points[i].y, 3, 3);
+    for (let i = 0; i < points.length - (2 * lastRemovedPointIndex); i++) {
+        drawFirstPartOfLine(points[i].x, points[i].y, colorOfLine, widthOfLine);
         i++;
-        context.strokeStyle = points[i].color;
-        context.lineWidth = points[i].lineWidth;
-        context.lineTo(points[i].x, points[i].y);
-        context.fillRect(points[i].x, points[i].y, 3, 3);
-        context.stroke();
+        drawLastPartOfLine(points[i].x, points[i].y, colorOfLine, widthOfLine);
     }
 
     if (points.length === 0) {
         returnButton.setAttribute('disabled', 'disabled');
         cancelButton.setAttribute('disabled', 'disabled');
-        clicksOnCancelButton--;
+        lastRemovedPointIndex--;
     }
 });
 
@@ -104,8 +90,8 @@ deleteButton.addEventListener('click', function () {
     deleteButton.setAttribute('disabled', 'disabled');
     context.clearRect(0, 0, canvas.width, canvas.height);
     points = [];
-    clicks = 1;
-    clicksOnCancelButton = 0;
+    isFirstPointExist = true;
+    lastRemovedPointIndex = 0;
     cancelButtonIsUsed = false;
 });
 
@@ -118,77 +104,91 @@ canvas.onmousedown = function (event) {
         deleteButton.removeAttribute('disabled');
     }
     
-    if (clicks === 1) {
-        if (clicksOnCancelButton >= 1 && cancelButtonIsUsed === true) {
+    if (isFirstPointExist === true) {
+        if (lastRemovedPointIndex >= 1 && cancelButtonIsUsed === true) {
             returnButton.setAttribute('disabled', 'disabled');
-            points.splice(-clicksOnCancelButton * 2, clicksOnCancelButton * 2);
-            clicksOnCancelButton -= clicksOnCancelButton;
-            cancelButtonIsUsed = false
+            points.splice(-lastRemovedPointIndex * 2, lastRemovedPointIndex * 2);
+            lastRemovedPointIndex -= lastRemovedPointIndex;
+            cancelButtonIsUsed = false;
         }
 
         if (cancelButtonIsUsed === true) {
             points.splice(-2, 2);
-            clicksOnCancelButton--;
+            lastRemovedPointIndex--;
         }
 
         x1 = event.clientX;
         y1 = event.clientY;
-        context.fillRect(x1 ,y1-204, 3, 3);
+        context.fillRect(x1, y1 - heightOfTop, 3, 3);
         points.push({
             x: x1,
-            y: y1-204,
+            y: y1 - heightOfTop,
             color : colorOfLine,
             lineWidth : widthOfLine,
         });
-        clicks = 2;
+        isFirstPointExist = false;
         cancelButtonIsUsed = false;
 
-        if (clicksOnCancelButton === 0) {
+        if (lastRemovedPointIndex === 0) {
             returnButton.setAttribute('disabled','disabled');
         }
     } else {
         x2 = event.clientX;
         y2 = event.clientY;
-        context.fillRect(x2, y2-204, 3, 3);
+        context.fillRect(x2, y2 - heightOfTop, 3, 3);
         points.push({
             x: x2,
-            y: y2-204,
+            y: y2 - heightOfTop,
             color : colorOfLine,
             lineWidth : widthOfLine,
         });
-        clicks = 1;
-        draw(x1, x2 ,y1, y2);
+        isFirstPointExist = true;
+        context.clearRect(x1, y1 - heightOfTop, 3, 3);
+        context.clearRect(x2, y2 - heightOfTop, 3, 3);
+        drawLine(x1, x2 ,y1, y2);
     }
 };
 
-function draw(x1, x2, y1, y2) {
+function drawLine (x1, x2, y1, y2) {
     context.beginPath();
-    context.moveTo(x1, y1-204);
-    context.lineTo(x2, y2-204);
+    context.moveTo(x1, y1 - heightOfTop);
+    context.lineTo(x2, y2 - heightOfTop);
     context.stroke();
 };
-
+function drawFirstPartOfLine (x , y, color, width) {
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.beginPath();
+    context.moveTo(x, y);
+}
+function drawLastPartOfLine (x , y, color, width) {
+    context.strokeStyle = color;
+    context.lineWidth = width;
+    context.lineTo(x, y);
+    context.stroke();
+}
 const brushPanel = document.getElementById('brush');
 const dropDawn = document.getElementById('dropdown-content');
-dropDawn.onclick = function (event) {
-    widthOfLine = event.target.id;
+
+dropDawn.onclick = function (e) {
+    widthOfLine = e.target.id;
 }
+
 brushPanel.addEventListener('click', function (event) {
     dropDawn.style.display = 'block';
 })
+
 document.onclick = function (e) {
     if (e.target.className !== 'brush') {
         dropDawn.style.display = 'none';
     }
 }
 
-var parent = document.querySelector('#palette');
-    var picker = new Picker({
+const parent = document.querySelector('#palette');
+    let picker = new Picker({
         parent: parent,
         popup: 'left',
         color: 'violet',
-        //alpha: false,
-        //editor: false,
         editorFormat: 'rgb',
         onDone: function(color) {
             colorOfLine = color.rgbaString;
